@@ -105,7 +105,8 @@ read_string_1:
 	pop bp
 	ret
 	
-start:
+start: ;программа вся та же самая что и копирование файлов, только в момент записиь символ xor-ится
+	; с символом из гаммы
     mov ax, _data
     mov ds, ax
     mov ax, _stack
@@ -179,15 +180,17 @@ start:
 		add sp, 2
 		jmp break_cycle_read
 		
-		next1:
+		next1: ; c xor gamma[si % gamma_len]
 		mov bx, offset gamma
 		mov ax, si
 		div [gamma_len]
-		xor al, al
+		mov al, ah ; в al сейчас остаток от деления si на gamma_len
+		xor ah, ah
 		mov si, ax
 		mov al, byte ptr[tmp]
 		xor al, byte ptr[bx + si]
 		mov [tmp], al
+		
 		mov dx, offset tmp
 		push dx
 		push word ptr[file2_descr]

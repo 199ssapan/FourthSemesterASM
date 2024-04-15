@@ -15,7 +15,7 @@ _data ends
 _code segment para public use16
 assume cs:_code,ds:_data,ss:_stack
 
-get_file_descriptor:
+get_file_descriptor: ; получение дескриптора файла по имени и режиму открытия
 	push bp
 	mov bp, sp
 	
@@ -24,7 +24,7 @@ get_file_descriptor:
 	mov al, [bp + 6]
 	mov dx, [bp + 4]
 	int 21h
-	jnc get_descr_ret
+	jnc get_descr_ret ; если флаг cf установлен значит ошибка есть
 	
 	mov dx, offset error_
 	mov ah, 09h
@@ -35,7 +35,7 @@ get_file_descriptor:
 	pop bp
 	ret
 
-read_charf:
+read_charf: ; чтение символа с файла
 	push bp
 	mov bp, sp
 	
@@ -48,7 +48,7 @@ read_charf:
 	pop bp
 	ret
 
-close_file:
+close_file: ; закрытие файла
 	push bp
 	mov bp, sp
 	
@@ -59,7 +59,7 @@ close_file:
 	pop bp
 	ret
 	
-write_charf:
+write_charf: ; запись символа в файл
 	push bp
 	mov bp, sp
 	
@@ -68,10 +68,11 @@ write_charf:
 	mov cx, 1
 	mov dx, [bp + 6]
 	int 21h
+	
 	pop bp
 	ret
 
-rewrite_make_file:
+rewrite_make_file: ; перезапись второго файла, если он есть, содержимое стирается, иначе создается новый файл
 	push bp
 	mov bp, sp
 	
@@ -84,7 +85,7 @@ rewrite_make_file:
 	pop bp
 	ret
 
-get_file_name:
+get_file_name: ; получения имени файла через консоль
 	push bp
 	mov bp, sp
 	
@@ -126,7 +127,7 @@ start:
 	
 	mov [file1_descr], ax
 	
-	mov dx, offset file2_name
+	mov dx, offset file2_name ; перезапись файла или создание нового
 	push 0
 	push dx
 	call rewrite_make_file
@@ -136,8 +137,6 @@ start:
 	push word ptr [file2_descr]
 	call close_file
 	add sp, 2
-	
-	;;;
 	
 	mov dx, offset file2_name
 	push 1
@@ -149,10 +148,11 @@ start:
 	
 	cycle_read:
 		push word ptr [file1_descr]
-		call read_charf
+		call read_charf ; читаем символ с 1 файла
 		add sp, 2
 		
-		cmp ax, 0
+		cmp ax, 0 ; если в ах вернулся 0 значит считалось 0 байт, значит файл закончился, закрываем файлы, 
+		;выходим из программы
 		jne next1
 		
 		push word ptr [file1_descr]
