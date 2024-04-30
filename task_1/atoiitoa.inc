@@ -50,6 +50,7 @@ _atoi:
 			add dx, 10
 		next_h:
 		mul dx
+		jo exit_e
 		add cx, ax
 		cmp cx, 8000h
 		je okay
