@@ -20,7 +20,6 @@ get_len:
 _atoi: 
     push bp
     mov bp, sp
-	int 3
 	xor cx, cx
 	xor dx, dx
 	
@@ -49,6 +48,7 @@ _atoi:
 			sub dx, "a"
 			add dx, 10
 		next_h:
+		int 3
 		mul dx
 		jo exit_e
 		add cx, ax
@@ -60,6 +60,7 @@ _atoi:
 		okay:
 		mov ax, [multiplier] ; ax *= mult
 		mul word ptr[bp + arg2]
+		jo exit_e
 		mov [multiplier], ax
 		
 		jmp cycle_atoi
